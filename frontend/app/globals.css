@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #C4A77D;
+  --color-primary-light: #D4BC9A;
+  --color-primary-dark: #8B6914;
+  --color-surface: #1A1612;
+  --color-surface-raised: #252019;
+  --color-surface-overlay: #2D2621;
+  --color-card: #332D27;
+  --color-border: #3D3630;
+  --color-foreground: #F5F0EB;
+  --color-muted-foreground: #B8AFA5;
+  --color-muted: #7A7269;
+  --color-success: #4ADE80;
+  --color-warning: #FBBF24;
+  --color-danger: #F87171;
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Base */
+html, body, #root {
+  height: 100%;
+  font-family: var(--font-primary);
+  background: #1A1612;
+  color: #F5F0EB;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #252019; }
+::-webkit-scrollbar-thumb { background: #3D3630; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #8B6914; }
+
+/* Background decorations (complex radial gradients — kept in CSS) */
+.bg-cafe-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at top right, rgba(196, 167, 125, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(139, 105, 20, 0.1) 0%, transparent 50%);
+}
+
+.bg-cafe-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C4A77D' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Spinner (animation not easily replicated with Tailwind alone) */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in { animation: fadeIn 250ms ease-out; }
+.animate-scale-in { animation: scaleIn 250ms ease-out; }
