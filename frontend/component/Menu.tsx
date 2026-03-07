@@ -14,7 +14,7 @@ const categoryEmoji: Record<string, string> = {
   other: '🥤',
 }
 
-export default function Menu() {
+export default function Menu({ positionId }: { positionId?: string }) {
   const [categories, setCategories] = useState<Category[]>([])
   const [items, setItems] = useState<MenuItem[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
@@ -81,7 +81,7 @@ export default function Menu() {
         qty: c.qty,
         price: c.price,
       }))
-      await createOrder(orderItems, method)
+      await createOrder(orderItems, method, positionId)
       setCart([])
       setShowPayment(false)
       alert('สั่งเรียบร้อย! 🎉')

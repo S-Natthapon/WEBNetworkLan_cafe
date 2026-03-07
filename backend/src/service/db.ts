@@ -41,15 +41,15 @@ export async function initDB() {
         total DOUBLE PRECISION NOT NULL,
         payment_method TEXT NOT NULL,
         status TEXT DEFAULT 'pending',
+        position_id TEXT,
         cashier_name TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
     `);
 
-    // migration: เพิ่ม status column ถ้ายังไม่มี
-    await client.query(`
-      ALTER TABLE orders ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
-    `);
+    // migration: เพิ่ม column ถ้ายังไม่มี
+    await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';`);
+    await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS position_id TEXT;`);
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS order_items (

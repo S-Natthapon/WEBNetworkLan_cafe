@@ -1,5 +1,17 @@
+'use client'
 
-function Navbar() {
+import { useState, useEffect } from 'react'
+import { fetchOrders } from '@/service/api'
+
+function Navbar({ positionId }: { positionId?: string }) {
+  const [billCount, setBillCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10)
+    fetchOrders(today)
+      .then((orders) => setBillCount(orders.length))
+      .catch(() => setBillCount(null))
+  }, [])
 
   return (
     <nav className="relative z-10 flex items-center justify-between px-6 py-3.5 border-b border-border bg-surface-raised/80 backdrop-blur-sm shrink-0">
@@ -16,22 +28,24 @@ function Navbar() {
 
       {/* Center: Quick stats */}
       <div className="flex items-center gap-6">
+        {positionId && (
+          <>
+            <div className="text-center">
+              <p className="text-xs text-muted">โต๊ะ</p>
+              <p className="text-sm font-semibold text-foreground">
+                {positionId}
+              </p>
+            </div>
+            <div className="w-px h-6 bg-border" />
+          </>
+        )}
         <div className="text-center">
-          <p className="text-xs text-muted">ตำแหน่งโต้ะ</p>
-          <p className="text-sm font-semibold text-foreground">
-            5
-          </p>
-        </div>
-        <div className="w-px h-6 bg-border" />
-        <div className="text-center">
-          <p className="text-xs text-muted">บิลที่</p>
+          <p className="text-xs text-muted">บิลวันนี้</p>
           <p className="text-sm font-semibold text-primary">
-            3
+            {billCount !== null ? billCount : '–'}
           </p>
         </div>
       </div>
-
-      
     </nav>
   );
 }

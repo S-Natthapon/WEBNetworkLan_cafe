@@ -9,7 +9,7 @@ router.post("/", async (req: Request, res: Response) => {
     const client = await pool.connect();
 
     try {
-        const { items, payment_method } = req.body;
+        const { items, payment_method, position_id } = req.body;
 
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({ error: "No items provided" });
@@ -36,9 +36,9 @@ router.post("/", async (req: Request, res: Response) => {
         const orderId = crypto.randomUUID();
 
         await client.query(
-            `INSERT INTO orders (id, order_number, total, payment_method, status, cashier_name)
-       VALUES ($1, $2, $3, $4, 'pending', $5)`,
-            [orderId, orderNumber, total, payment_method, "Admin"]
+            `INSERT INTO orders (id, order_number, total, payment_method, status, position_id, cashier_name)
+       VALUES ($1, $2, $3, $4, 'pending', $5, $6)`,
+            [orderId, orderNumber, total, payment_method, position_id || null, "Admin"]
         );
 
         // เพิ่มรายการสินค้า
@@ -53,7 +53,7 @@ router.post("/", async (req: Request, res: Response) => {
         await client.query("COMMIT");
 
         const { rows: orderRows } = await client.query(
-            "SELECT id AS order_id, order_number, total, payment_method, status, cashier_name, created_at FROM orders WHERE id = $1",
+            "SELECT id AS order_id, order_number, total, payment_method, status, position_id, cashier_name, created_at FROM orders WHERE id = $1",
             [orderId]
         );
 
@@ -78,7 +78,7 @@ router.get("/", async (req: Request, res: Response) => {
         const { date, status } = req.query;
 
         let query = `
-      SELECT id AS order_id, order_number, total, payment_method, status, cashier_name, created_at
+      SELECT id AS order_id, order_number, total, payment_method, status, position_id, cashier_name, created_at
       FROM orders
     `;
         const params: string[] = [];

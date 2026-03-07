@@ -285,6 +285,11 @@ function OrderCard({
                     <span className={`text-xl font-black ${completed ? 'text-gray-500' : 'text-[#cba365]'}`}>
                         #{order.order_number}
                     </span>
+                    {order.position_id && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/15 border border-orange-500/40 text-orange-400 font-medium">
+                            🪑 โต๊ะ {order.position_id}
+                        </span>
+                    )}
                     <span className="text-xs px-2 py-0.5 rounded-full border" style={{
                         color: pay.color,
                         borderColor: pay.color + '40',

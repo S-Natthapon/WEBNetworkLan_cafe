@@ -39,6 +39,7 @@ export interface Order {
   total: number;
   payment_method: string;
   status: 'pending' | 'completed';
+  position_id: string | null;
   cashier_name: string;
   created_at: string;
   items: OrderItem[];
@@ -129,11 +130,12 @@ export async function fetchMenuItems(category?: string): Promise<MenuItem[]> {
 // ─── Orders ───────────────────────────────────────────────────────────────────
 export async function createOrder(
   items: OrderItem[],
-  payment_method: string
+  payment_method: string,
+  position_id?: string
 ): Promise<Order> {
   return request('/api/orders', {
     method: 'POST',
-    body: JSON.stringify({ items, payment_method }),
+    body: JSON.stringify({ items, payment_method, position_id }),
   });
 }
 
