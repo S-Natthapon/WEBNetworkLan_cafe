@@ -135,7 +135,8 @@ router.get("/summary/daily", async (req: Request, res: Response) => {
         COUNT(*)   FILTER (WHERE payment_method = 'card')          AS card_orders,
         COALESCE(SUM(total) FILTER (WHERE payment_method = 'card'), 0)       AS card_revenue
       FROM orders
-      WHERE created_at::date = $1`,
+      WHERE created_at::date = $1 AND status = 'completed'  -- Only count confirmed orders
+    `,
             [date]
         );
 

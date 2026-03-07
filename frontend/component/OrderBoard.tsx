@@ -151,6 +151,13 @@ export default function OrderBoard() {
                         >
                             {loading ? '⏳' : '🔄'} รีเฟรช
                         </button>
+                        <button
+                            onClick={() => location.href = '/dashboard'}
+                            disabled={loading}
+                            className="bg-[#362e28] hover:bg-[#4a3f35] border border-[#4a3f35] text-gray-300 px-4 py-2 rounded-xl text-sm transition-colors active:scale-95 disabled:opacity-50"
+                        >
+                            💾 Dashboard
+                        </button>
                     </div>
                 </div>
             </header>

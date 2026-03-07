@@ -64,7 +64,7 @@ export default function Dashboard() {
             const today = new Date().toISOString().slice(0, 10)
             const [s, o] = await Promise.all([
                 fetchDailySummary(today),
-                fetchOrders(today),
+                fetchOrders(today, 'completed'),
             ])
             setSummary(s)
             setOrders(o)
@@ -138,6 +138,13 @@ export default function Dashboard() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                             รีเฟรช
+                        </button>
+                        <button
+                            onClick={() => location.href = '/orders'}
+                            disabled={loading}
+                            className="bg-[#362e28] hover:bg-[#4a3f35] border border-[#4a3f35] text-gray-300 px-4 py-2 rounded-xl text-sm transition-colors active:scale-95 disabled:opacity-50"
+                        >
+                            📋 จัดการออเดอร์
                         </button>
                     </div>
                 </div>
@@ -222,10 +229,10 @@ export default function Dashboard() {
                                                     </td>
                                                     <td className="px-3 py-3 text-center">
                                                         <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${o.payment_method === 'cash'
-                                                                ? 'bg-emerald-500/15 text-emerald-400'
-                                                                : o.payment_method === 'promptpay'
-                                                                    ? 'bg-blue-500/15 text-blue-400'
-                                                                    : 'bg-purple-500/15 text-purple-400'
+                                                            ? 'bg-emerald-500/15 text-emerald-400'
+                                                            : o.payment_method === 'promptpay'
+                                                                ? 'bg-blue-500/15 text-blue-400'
+                                                                : 'bg-purple-500/15 text-purple-400'
                                                             }`}>
                                                             {payLabel(o.payment_method)}
                                                         </span>
