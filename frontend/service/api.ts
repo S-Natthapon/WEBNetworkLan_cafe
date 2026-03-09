@@ -171,6 +171,13 @@ export async function login(userId: string, pin: string): Promise<{ token: strin
   });
 }
 
+export async function printOrder(items: OrderItem[]): Promise<{ success: boolean; message: string }> {
+  return request('/printer/print', {
+    method: 'POST',
+    body: JSON.stringify({ items: items.map(it => ({ name: it.item_name, quantity: it.qty, price: it.price })) }),
+  });
+}
+
 // ─── Health ───────────────────────────────────────────────────────────────────
 
 export async function checkHealth(): Promise<boolean> {

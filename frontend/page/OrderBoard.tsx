@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { fetchOrders, updateOrderStatus, printOrder, type Order } from '@/service/api'
+import { fetchOrders, updateOrderStatus, type Order } from '@/service/api'
 
 /* ─── Helpers ─── */
 
@@ -82,14 +82,6 @@ export default function OrderBoard() {
             setPendingOrders((prev) => prev.filter((o) => o.order_id !== orderId))
             if (order) {
                 setCompletedOrders((prev) => [{ ...order, status: 'completed' as const }, ...prev].slice(0, 20))
-
-                // พิมพ์ใบเสร็จเมื่อกดสำเร็จ
-                try {
-                    await printOrder(order.items)
-                } catch (printErr) {
-                    console.error('พิมพ์ใบเสร็จไม่สำเร็จ:', printErr)
-                    // ไม่ alert เพื่อไม่ให้ขัดจังหวะการทำงาน แต่ log ไว้
-                }
             }
         } catch (err) {
             console.error('อัพเดทสถานะไม่สำเร็จ:', err)
