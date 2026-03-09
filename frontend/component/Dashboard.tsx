@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { fetchDailySummary, fetchOrders, type DailySummary, type Order } from '@/service/api'
+import { useRouter } from 'next/navigation'
+import { fetchDailySummary, fetchOrders, clearSession, type DailySummary, type Order } from '@/service/api'
 //components
 import SummaryCard from './SummaryCard'
 
@@ -76,6 +77,15 @@ export default function Dashboard() {
         }
     }, [])
 
+    const router = useRouter()
+
+    const handleLogout = () => {
+        if (confirm('ยืนยันการออกจากระบบ?')) {
+            clearSession()
+            router.replace('/login')
+        }
+    }
+
     useEffect(() => {
         load()
         const interval = setInterval(load, 30_000)      // refresh ทุก 30 วิ
@@ -102,7 +112,7 @@ export default function Dashboard() {
 
     /* ─── Render ─── */
     return (
-        <main className="relative w-full min-h-[100dvh] bg-[#26211d] font-sans text-white">
+        <main className="relative w-full min-h-dvh bg-surface font-sans text-foreground">
             <style dangerouslySetInnerHTML={{
                 __html: `
         .custom-scroll::-webkit-scrollbar { width: 6px; }
@@ -118,21 +128,21 @@ export default function Dashboard() {
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold">
-                            <span className="text-[#cba365]">📊</span> แดชบอร์ด
+                            <span className="text-primary">📊</span> แดชบอร์ด
                         </h1>
-                        <p className="text-sm text-gray-400 mt-1">{now}</p>
+                        <p className="text-sm text-muted mt-1">{now}</p>
                     </div>
 
                     <div className="flex items-center gap-3">
                         {isDemo && (
-                            <span className="text-xs bg-[#4a3f35] text-[#cba365] px-3 py-1 rounded-full">
+                            <span className="text-xs bg-surface-raised text-primary px-3 py-1 rounded-full border border-border">
                                 ⚠ ข้อมูลตัวอย่าง
                             </span>
                         )}
                         <button
                             onClick={load}
                             disabled={loading}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#362e28] border border-[#4a3f35] text-sm text-gray-300 hover:border-gray-400 hover:text-white transition-colors active:scale-95 disabled:opacity-50"
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-raised border border-border text-sm text-muted-foreground hover:border-muted hover:text-foreground transition-colors active:scale-95 disabled:opacity-50"
                         >
                             <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -140,11 +150,20 @@ export default function Dashboard() {
                             รีเฟรช
                         </button>
                         <button
-                            onClick={() => location.href = '/orders'}
+                            onClick={() => router.push('/orders')}
                             disabled={loading}
-                            className="bg-[#362e28] hover:bg-[#4a3f35] border border-[#4a3f35] text-gray-300 px-4 py-2 rounded-xl text-sm transition-colors active:scale-95 disabled:opacity-50"
+                            className="bg-surface-raised hover:bg-surface-overlay border border-border text-muted-foreground hover:text-foreground px-4 py-2 rounded-xl text-sm transition-colors active:scale-95 disabled:opacity-50"
                         >
                             📋 จัดการออเดอร์
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-2 rounded-xl text-sm transition-all active:scale-95 flex items-center gap-2"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                            </svg>
+                            ออกจากระบบ
                         </button>
                     </div>
                 </div>

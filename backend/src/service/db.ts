@@ -62,6 +62,15 @@ export async function initDB() {
       );
     `);
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'cashier'
+      );
+    `);
+
     const { rows: cats } = await client.query(
       "SELECT id FROM categories LIMIT 1"
     );
@@ -73,6 +82,16 @@ export async function initDB() {
         ('tea','ชา','🍵',2),
         ('bakery','เบเกอรี่','🥐',3),
         ('other','เครื่องดื่มอื่นๆ','🥤',4)
+        ON CONFLICT DO NOTHING;
+      `);
+    }
+
+    const { rows: users } = await client.query("SELECT id FROM users LIMIT 1");
+    if (users.length === 0) {
+      await client.query(`
+        INSERT INTO users (id, name, password, role) VALUES
+        ('admin', 'ผู้ดูแลระบบ', '1234', 'admin'),
+        ('cashier', 'แคชเชียร์', '0000', 'cashier')
         ON CONFLICT DO NOTHING;
       `);
     }

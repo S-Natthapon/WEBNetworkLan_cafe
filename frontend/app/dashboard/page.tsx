@@ -1,7 +1,10 @@
-"use client"
-
 import Dashboard from "@/component/Dashboard"
+import AuthGuard from "@/component/AuthGuard"
 
 export default function DashboardPage() {
-    return <Dashboard />
+    return (
+        <AuthGuard>
+            <Dashboard />
+        </AuthGuard>
+    )
 }

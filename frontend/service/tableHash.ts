@@ -1,6 +1,6 @@
 
 
-const SECRET = process.env.TABLE_SECRET || 'QR-cafe-2026-secret'
+const SECRET = process.env.NEXT_PUBLIC_TABLE_SECRET || 'QR-cafe-2026-secret'
 
 /** Simple hash function (djb2 + hex) */
 function simpleHash(str: string): string {
@@ -39,7 +39,7 @@ export function getPositionUrl(id: string, baseUrl?: string): string {
 
 /** จำนวนโต๊ะทั้งหมด (จาก .env) */
 export function getTableCount(): number {
-    return Number(process.env.TABLE_COUNT) || 10
+    return Number(process.env.NEXT_PUBLIC_TABLE_COUNT) || 10
 }
 
 /** สร้าง URL ทั้งหมดสำหรับโต๊ะ 1-N (default = TABLE_COUNT) */

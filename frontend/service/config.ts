@@ -16,17 +16,15 @@ export interface AppConfig {
 }
 
 const DEFAULT_CONFIG: AppConfig = {
-  serverUrl: 'http://localhost:3003',
+  serverUrl: typeof window !== 'undefined'
+    ? `http://${window.location.hostname}:3003`
+    : 'http://localhost:3003',
   printerConnection: 'usb',
   printerProtocol: 'tspl2',
-
-  // USB defaults
   printerUsbPath: '/dev/usb/lp0',
-
-  // Network defaults
   printerIp: '',
   printerPort: 9100,
-};
+}
 
 // ─── Validate Config ─────────────────────────────
 

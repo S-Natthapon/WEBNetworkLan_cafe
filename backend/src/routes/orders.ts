@@ -78,41 +78,49 @@ router.get("/", async (req: Request, res: Response) => {
         const { date, status } = req.query;
 
         let query = `
-      SELECT id AS order_id, order_number, total, payment_method, status, position_id, cashier_name, created_at
-      FROM orders
-    `;
+            SELECT 
+                o.id AS order_id, 
+                o.order_number, 
+                o.total, 
+                o.payment_method, 
+                o.status, 
+                o.position_id, 
+                o.cashier_name, 
+                o.created_at,
+                COALESCE(
+                    json_agg(
+                        json_build_object(
+                            'item_id', oi.item_id,
+                            'item_name', oi.item_name,
+                            'qty', oi.qty,
+                            'price', oi.price
+                        )
+                    ) FILTER (WHERE oi.id IS NOT NULL), '[]'
+                ) AS items
+            FROM orders o
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+        `;
+        
         const params: string[] = [];
         const conditions: string[] = [];
 
         if (date && typeof date === "string") {
             params.push(date);
-            conditions.push(`created_at::date = $${params.length}`);
+            conditions.push(`o.created_at::date = $${params.length}`);
         }
         if (status && typeof status === "string") {
             params.push(status);
-            conditions.push(`status = $${params.length}`);
+            conditions.push(`o.status = $${params.length}`);
         }
 
         if (conditions.length > 0) {
             query += " WHERE " + conditions.join(" AND ");
         }
 
-        query += " ORDER BY created_at DESC LIMIT 50";
+        query += " GROUP BY o.id ORDER BY o.created_at DESC LIMIT 50";
 
         const { rows: orders } = await pool.query(query, params);
-
-        // ดึง items ของแต่ละ order
-        const result = await Promise.all(
-            orders.map(async (order: { order_id: string }) => {
-                const { rows: items } = await pool.query(
-                    "SELECT item_id, item_name, qty, price FROM order_items WHERE order_id = $1",
-                    [order.order_id]
-                );
-                return { ...order, items };
-            })
-        );
-
-        res.json(result);
+        res.json(orders);
     } catch (err) {
         console.error("Error fetching orders:", err);
         res.status(500).json({ error: "Internal server error" });

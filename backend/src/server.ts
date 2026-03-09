@@ -4,6 +4,7 @@ import printerRoutes from "./routes/printer";
 import menuRoutes from "./routes/menu";
 import orderRoutes from "./routes/orders";
 import healthRoutes from "./routes/health";
+import authRoutes from "./routes/auth";
 import { initDB } from "./service/db";
 
 const app = express();
@@ -14,7 +15,7 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.json({
-    message: "POS Cafe API Running",
+    message: `POS Cafe API Running`,
   });
 });
 
@@ -22,6 +23,7 @@ app.use("/printer", printerRoutes);
 app.use("/api/menu", menuRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/health", healthRoutes);
+app.use("/api/auth", authRoutes);
 
 async function startServer() {
   try {

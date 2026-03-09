@@ -162,6 +162,15 @@ export async function fetchDailySummary(date?: string): Promise<DailySummary> {
   return request(`/api/orders/summary/daily${q}`);
 }
 
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+export async function login(userId: string, pin: string): Promise<{ token: string; user: User }> {
+  return request('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ userId, pin }),
+  });
+}
+
 // ─── Health ───────────────────────────────────────────────────────────────────
 
 export async function checkHealth(): Promise<boolean> {
