@@ -85,6 +85,62 @@ OPENSLIPVERIFY_TOKEN=your_token_here
 
 ## วิธีรันโปรเจกต์
 
+### ทางเลือก A) รันด้วย Docker (docker compose)
+
+โปรเจกต์นี้เตรียม `Dockerfile` แยกให้ทั้ง `backend/` และ `frontend/` และมี `docker-compose.yml` ที่รวม 3 service: `db` (Postgres), `backend` (API), `frontend` (Next.js)
+
+**โครงสร้าง `docker-compose.yml` (สรุป)**
+
+- **db**
+  - image: `postgres:16-alpine`
+  - env: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` (ค่าเริ่มต้น `user/password/qr_cafe`)
+  - port: `5432:5432`
+- **backend**
+  - build จาก `backend/Dockerfile`
+  - env DB: `DB_HOST=db`, `DB_PORT=5432`, `DB_NAME=qr_cafe`, `DB_USER=user`, `DB_PASSWORD=password`
+  - port: `3003:3003`
+- **frontend**
+  - build จาก `frontend/Dockerfile`
+  - port: `3000:3000`
+
+**Dockerfile แต่ละตัวทำอะไร**
+
+- `backend/Dockerfile`
+  - base: `node:20-slim`
+  - ติดตั้ง lib สำหรับ `canvas` และ tools build
+  - `npm install` + `npm run build` → สร้าง `dist/src/server.js`
+  - คำสั่งรัน: `npm start` (เรียก `node dist/src/server.js`)
+- `frontend/Dockerfile`
+  - สร้าง Next.js แบบ 2-stage (builder + runner)
+  - ใช้ output แบบ standalone (`.next/standalone`) แล้วรัน `node server.js` พอร์ต 3000
+
+**คำสั่งที่ใช้บ่อย**
+
+```bash
+# build + รันทุก service แบบ background
+docker compose up -d --build
+
+# ดูคอนเทนเนอร์
+docker ps
+
+# ดู log เฉพาะ backend / frontend / db
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f db
+
+# ปิดและลบคอนเทนเนอร์/เน็ตเวิร์ก (ไม่ลบ volume postgres_data)
+docker compose down
+```
+
+เมื่อรันสำเร็จ:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:3003`
+
+> หมายเหตุ: ข้อมูลใน DB ของ Docker จะเก็บใน volume `postgres_data` แยกจาก Postgres ที่รันนอก Docker
+
+### ทางเลือก B) รันบนเครื่องตรง (Local dev)
+
 ### 1) รัน Backend
 
 ```bash
