@@ -94,7 +94,7 @@ OPENSLIPVERIFY_TOKEN=your_token_here
 - **db**
   - image: `postgres:16-alpine`
   - env: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` (ค่าเริ่มต้น `user/password/qr_cafe`)
-  - port: `5432:5432`
+  - port: `5433:5432`
 - **backend**
   - build จาก `backend/Dockerfile`
   - env DB: `DB_HOST=db`, `DB_PORT=5432`, `DB_NAME=qr_cafe`, `DB_USER=user`, `DB_PASSWORD=password`
