@@ -64,11 +64,11 @@ export default function OrderBoard() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null)
     const prevCountRef = useRef<number>(0)
 
-    const [pinModalOrderId, setPinModalOrderId] = useState<string | null>(null)
-    const [pinStaffId, setPinStaffId] = useState('')
-    const [pin, setPin] = useState('')
-    const [pinError, setPinError] = useState<string | null>(null)
-    const [pinVerifying, setPinVerifying] = useState(false)
+    const [passwordModalOrderId, setPasswordModalOrderId] = useState<string | null>(null)
+    const [passwordStaffId, setPasswordStaffId] = useState('')
+    const [password, setPassword] = useState('')
+    const [passwordError, setPasswordError] = useState<string | null>(null)
+    const [passwordVerifying, setPasswordVerifying] = useState(false)
 
     // ─── Data Fetching ───
     const loadOrders = useCallback(async (showLoading = false) => {
@@ -168,33 +168,33 @@ export default function OrderBoard() {
         }
     }
 
-    const openPinModalForUndo = (orderId: string) => {
+    const openPasswordModalForUndo = (orderId: string) => {
         const u = getCurrentUser()
-        setPinStaffId(u?.id ?? '')
-        setPin('')
-        setPinError(null)
-        setPinModalOrderId(orderId)
+        setPasswordStaffId(u?.id ?? '')
+        setPassword('')
+        setPasswordError(null)
+        setPasswordModalOrderId(orderId)
     }
 
-    const handleConfirmUndoWithPin = async () => {
-        if (!pinModalOrderId) return
-        const staffId = pinStaffId.trim()
-        const p = pin.trim()
-        if (!staffId) { setPinError('กรุณากรอกรหัสพนักงาน'); return }
-        if (!p) { setPinError('กรุณากรอก PIN'); return }
+    const handleConfirmUndoWithPassword = async () => {
+        if (!passwordModalOrderId) return
+        const staffId = passwordStaffId.trim()
+        const p = password.trim()
+        if (!staffId) { setPasswordError('กรุณากรอกรหัสพนักงาน'); return }
+        if (!p) { setPasswordError('กรุณากรอกรหัสผ่าน'); return }
 
-        setPinVerifying(true)
-        setPinError(null)
+        setPasswordVerifying(true)
+        setPasswordError(null)
         try {
             await login(staffId, p) // ตรวจรหัสผ่าน (admin หรือ staff)
-            const orderId = pinModalOrderId
-            setPinModalOrderId(null)
+            const orderId = passwordModalOrderId
+            setPasswordModalOrderId(null)
             await handleUndoComplete(orderId)
         } catch (err) {
-            const msg = err instanceof Error ? err.message : 'PIN ไม่ถูกต้อง'
-            setPinError(msg)
+            const msg = err instanceof Error ? err.message : 'รหัสผ่านไม่ถูกต้อง'
+            setPasswordError(msg)
         } finally {
-            setPinVerifying(false)
+            setPasswordVerifying(false)
         }
     }
 
@@ -335,7 +335,7 @@ export default function OrderBoard() {
                                             order={order}
                                             index={i}
                                             completed
-                                            onUndo={() => openPinModalForUndo(order.order_id)}
+                                            onUndo={() => openPasswordModalForUndo(order.order_id)}
                                             onViewReceipt={(url) => setPreviewUrl(url)}
                                             isUpdating={updatingId === order.order_id}
                                         />
@@ -352,10 +352,10 @@ export default function OrderBoard() {
                 <ReceiptModal url={previewUrl} onClose={() => setPreviewUrl(null)} />
             )}
 
-            {/* PIN Confirm Modal (Undo) */}
-            {pinModalOrderId && (
+            {/* Password Confirm Modal (Undo) */}
+            {passwordModalOrderId && (
                 <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-                    <div className="absolute inset-0" onClick={() => (pinVerifying ? null : setPinModalOrderId(null))} />
+                    <div className="absolute inset-0" onClick={() => (passwordVerifying ? null : setPasswordModalOrderId(null))} />
                     <div className="relative w-full max-w-sm bg-[#1e1915] border border-[#3e352d] rounded-3xl p-6 shadow-2xl">
                         <div className="text-center mb-5">
                             <div className="text-3xl mb-2">🔒</div>
@@ -363,9 +363,9 @@ export default function OrderBoard() {
                             <p className="text-gray-500 text-sm mt-1">กรอกรหัส Admin หรือ Staff</p>
                         </div>
 
-                        {pinError && (
+                        {passwordError && (
                             <div className="mb-4 bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-3 text-sm text-center">
-                                {pinError}
+                                {passwordError}
                             </div>
                         )}
 
@@ -373,43 +373,42 @@ export default function OrderBoard() {
                             <div>
                                 <label className="text-xs text-gray-500 block mb-1">รหัสพนักงาน</label>
                                 <input
-                                    value={pinStaffId}
-                                    onChange={(e) => setPinStaffId(e.target.value)}
+                                    value={passwordStaffId}
+                                    onChange={(e) => setPasswordStaffId(e.target.value)}
                                     className="w-full bg-[#2a241f] border border-[#3e352d] rounded-xl px-4 py-3 text-white outline-none focus:border-[#cba365]"
                                     placeholder="เช่น admin, cashier"
                                     autoComplete="username"
-                                    disabled={pinVerifying}
+                                    disabled={passwordVerifying}
                                 />
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">PIN</label>
+                                <label className="text-xs text-gray-500 block mb-1">รหัสผ่าน</label>
                                 <input
-                                    value={pin}
-                                    onChange={(e) => { if (/^\\d*$/.test(e.target.value)) setPin(e.target.value) }}
-                                    inputMode="numeric"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     type="password"
-                                    className="w-full bg-[#2a241f] border border-[#3e352d] rounded-xl px-4 py-3 text-white outline-none focus:border-[#cba365] tracking-[0.25em]"
-                                    placeholder="••••"
+                                    className="w-full bg-[#2a241f] border border-[#3e352d] rounded-xl px-4 py-3 text-white outline-none focus:border-[#cba365]"
+                                    placeholder="รหัสผ่าน"
                                     autoComplete="current-password"
-                                    disabled={pinVerifying}
+                                    disabled={passwordVerifying}
                                 />
                             </div>
                         </div>
 
                         <div className="mt-6 grid grid-cols-2 gap-3">
                             <button
-                                onClick={() => setPinModalOrderId(null)}
-                                disabled={pinVerifying}
+                                onClick={() => setPasswordModalOrderId(null)}
+                                disabled={passwordVerifying}
                                 className="py-3 rounded-xl border border-[#3e352d] text-gray-300 hover:bg-[#2a241f] transition-colors disabled:opacity-50"
                             >
                                 ยกเลิก
                             </button>
                             <button
-                                onClick={handleConfirmUndoWithPin}
-                                disabled={pinVerifying}
+                                onClick={handleConfirmUndoWithPassword}
+                                disabled={passwordVerifying}
                                 className="py-3 rounded-xl bg-[#cba365] text-[#26211d] font-black hover:bg-[#dfb572] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                             >
-                                {pinVerifying ? (
+                                {passwordVerifying ? (
                                     <>
                                         <div className="w-4 h-4 border-2 border-[#26211d]/30 border-t-[#26211d] rounded-full animate-spin" />
                                         กำลังตรวจสอบ...

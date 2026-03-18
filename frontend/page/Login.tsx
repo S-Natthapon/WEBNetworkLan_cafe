@@ -7,11 +7,11 @@ import { saveSession, getCurrentUser, checkHealth, login, type User } from '@/se
 export default function Login() {
   const router = useRouter()
   const [staffId, setStaffId] = useState('')
-  const [pin, setPin] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [serverOk, setServerOk] = useState<boolean | null>(null)
-  const [showPin, setShowPin] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   /* ── ถ้า login แล้ว → redirect ── */
   useEffect(() => {
@@ -29,10 +29,10 @@ export default function Login() {
     setError('')
 
     const id = staffId.trim()
-    const p = pin.trim()
+    const p = password.trim()
 
     if (!id) { setError('กรุณากรอกรหัสพนักงาน'); return }
-    if (!p) { setError('กรุณากรอก PIN'); return }
+    if (!p) { setError('กรุณากรอกรหัสผ่าน'); return }
 
     setLoading(true)
     try {
@@ -46,10 +46,6 @@ export default function Login() {
       setLoading(false)
     }
   }
-
-  /* ── Keypad helpers ── */
-  const appendPin = (d: string) => { if (pin.length < 6) setPin(prev => prev + d) }
-  const deletePin = () => setPin(prev => prev.slice(0, -1))
 
   return (
     <main className="w-full min-h-[100dvh] bg-[#1A1612] font-sans text-white">
@@ -100,7 +96,7 @@ export default function Login() {
               {/* Staff ID */}
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="staffId" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  รหัสพนักงาน
+                  username
                 </label>
                 <div className="relative group">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none transition-colors group-focus-within:text-primary">
@@ -121,10 +117,10 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* PIN */}
+              {/* Password */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="pin" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  PIN
+                <label htmlFor="password" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  password
                 </label>
                 <div className="relative group">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none transition-colors group-focus-within:text-primary">
@@ -133,24 +129,21 @@ export default function Login() {
                     </svg>
                   </span>
                   <input
-                    type={showPin ? 'text' : 'password'}
-                    id="pin"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={6}
-                    className="w-full py-3.5 px-4 pl-12 pr-12 text-[15px] text-foreground bg-surface border border-border rounded-xl outline-none transition-all placeholder:text-[#5a5249] focus:border-primary focus:shadow-[0_0_0_3px_rgba(196,167,125,0.15)] hover:border-[#5a5249] tracking-[0.3em]"
-                    value={pin}
-                    onChange={(e) => { if (/^\d*$/.test(e.target.value)) setPin(e.target.value) }}
-                    placeholder="••••"
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    className="w-full py-3.5 px-4 pl-12 pr-12 text-[15px] text-foreground bg-surface border border-border rounded-xl outline-none transition-all placeholder:text-[#5a5249] focus:border-primary focus:shadow-[0_0_0_3px_rgba(196,167,125,0.15)] hover:border-[#5a5249]"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="รหัสผ่าน"
                     autoComplete="current-password"
                   />
                   <button
                     type="button"
                     tabIndex={-1}
-                    onClick={() => setShowPin(!showPin)}
+                    onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-muted hover:text-primary transition-colors rounded-lg"
                   >
-                    {showPin ? (
+                    {showPassword ? (
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
                       </svg>
@@ -164,58 +157,10 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* PIN Keypad */}
-              <div className="grid grid-cols-3 gap-2">
-                {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(d => (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => appendPin(d)}
-                    className="py-3 rounded-xl text-lg font-medium bg-surface-overlay border border-border text-foreground hover:bg-border hover:border-[#5a5249] active:scale-95 transition-all"
-                  >
-                    {d}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={deletePin}
-                  className="py-3 rounded-xl text-sm font-medium bg-surface-overlay border border-border text-red-400 hover:bg-red-500/10 hover:border-red-500/30 active:scale-95 transition-all"
-                >
-                  ⌫ ลบ
-                </button>
-                <button
-                  type="button"
-                  onClick={() => appendPin('0')}
-                  className="py-3 rounded-xl text-lg font-medium bg-surface-overlay border border-border text-foreground hover:bg-border hover:border-[#5a5249] active:scale-95 transition-all"
-                >
-                  0
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPin('')}
-                  className="py-3 rounded-xl text-sm font-medium bg-surface-overlay border border-border text-muted hover:bg-border hover:text-muted-foreground active:scale-95 transition-all"
-                >
-                  ล้าง
-                </button>
-              </div>
-
-              {/* PIN dots indicator */}
-              <div className="flex justify-center gap-2.5">
-                {[0, 1, 2, 3].map(i => (
-                  <div
-                    key={i}
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${i < pin.length
-                      ? 'bg-primary shadow-[0_0_8px_rgba(196,167,125,0.5)] scale-110'
-                      : 'bg-border'
-                      }`}
-                  />
-                ))}
-              </div>
-
               {/* Submit */}
               <button
                 type="submit"
-                disabled={loading || !staffId.trim() || !pin.trim()}
+                disabled={loading || !staffId.trim() || !password.trim()}
                 className="w-full py-4 rounded-xl text-base font-semibold transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed bg-linear-to-r from-primary to-primary-dark text-surface shadow-[0_4px_20px_rgba(196,167,125,0.2)] hover:shadow-[0_8px_30px_rgba(196,167,125,0.35)] hover:-translate-y-0.5 disabled:hover:translate-y-0 disabled:hover:shadow-none flex items-center justify-center gap-2"
               >
                 {loading ? (
