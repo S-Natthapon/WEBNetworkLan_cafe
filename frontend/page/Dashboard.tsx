@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { fetchDailySummary, fetchOrders, clearSession, type DailySummary, type Order } from '@/service/api'
+import { fetchDailySummary, fetchOrders, clearSession, getCurrentUser, type DailySummary, type Order } from '@/service/api'
 import { getServerUrl } from '@/service/config'
 //components
 import SummaryCard from './component/SummaryCard'
@@ -180,6 +180,28 @@ export default function Dashboard() {
                         >
                             📋 จัดการออเดอร์
                         </button>
+                        {getCurrentUser()?.role === 'admin' && (
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => router.push('/add-menu')}
+                                    disabled={loading}
+                                    className="bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary px-4 py-2 rounded-xl text-sm transition-all active:scale-95 flex items-center gap-2"
+                                >
+                                    <span>☕</span>
+                                    เพิ่มเมนู
+                                </button>
+                                <button
+                                    onClick={() => router.push('/add-emp')}
+                                    disabled={loading}
+                                    className="bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary px-4 py-2 rounded-xl text-sm transition-all active:scale-95 flex items-center gap-2"
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                                    </svg>
+                                    เพิ่มพนักงาน
+                                </button>
+                            </div>
+                        )}
                         <button
                             onClick={handleLogout}
                             className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-2 rounded-xl text-sm transition-all active:scale-95 flex items-center gap-2"
