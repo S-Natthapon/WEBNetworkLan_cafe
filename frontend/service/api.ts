@@ -22,7 +22,6 @@ export interface MenuItem {
   price: number;
   category_id: string;
   description: string;
-  image: string | null;
   is_available: boolean;
 }
 
@@ -129,6 +128,13 @@ export async function fetchMenuItems(category?: string): Promise<MenuItem[]> {
   return request(`/api/menu/items${q}`);
 }
 
+export async function addMenuItem(data: any): Promise<{ success: boolean; message: string }> {
+  return request('/api/menu/items', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
 // ─── Orders ───────────────────────────────────────────────────────────────────
 export async function createOrder(
   items: OrderItem[],
@@ -181,6 +187,13 @@ export async function login(userId: string, pin: string): Promise<{ token: strin
   return request('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ userId, pin }),
+  });
+}
+
+export async function register(userData: any): Promise<{ success: boolean; message: string }> {
+  return request('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(userData),
   });
 }
 

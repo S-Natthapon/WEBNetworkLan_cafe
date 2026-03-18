@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { saveSession, getCurrentUser, checkHealth, login, type User } from '@/service/api'
+import Link from 'next/link'
 
 export default function Login() {
   const router = useRouter()
@@ -188,7 +189,7 @@ export default function Login() {
 
           {/* Help Text */}
           <p className="text-center text-xs text-[#5a5249]">
-            ทดลองใช้งาน: <span className="text-muted">admin / 1234</span> หรือ <span className="text-muted">cashier / 0000</span>
+            ไม่มีบัญชีผู้ใช้? <span className="text-muted"><Link href="/add-emp">เพิ่มพนักงาน</Link></span>
           </p>
         </div>
       </div>

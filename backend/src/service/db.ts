@@ -28,7 +28,6 @@ export async function initDB() {
         name_en TEXT,
         price DOUBLE PRECISION NOT NULL,
         category_id TEXT REFERENCES categories(id),
-        image TEXT,
         description TEXT,
         is_available BOOLEAN DEFAULT TRUE
       );
@@ -73,9 +72,15 @@ export async function initDB() {
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         password TEXT NOT NULL,
-        role TEXT NOT NULL DEFAULT 'cashier'
+        role TEXT NOT NULL DEFAULT 'cashier',
+        login_attempts INTEGER DEFAULT 0,
+        lock_until TIMESTAMPTZ
       );
     `);
+
+    // migration: add columns to existing users table
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS login_attempts INTEGER DEFAULT 0;`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS lock_until TIMESTAMPTZ;`);
 
     const { rows: cats } = await client.query(
       "SELECT id FROM categories LIMIT 1"
@@ -94,12 +99,16 @@ export async function initDB() {
 
     const { rows: users } = await client.query("SELECT id FROM users LIMIT 1");
     if (users.length === 0) {
+      const bcrypt = require('bcrypt');
+      const adminPass = await bcrypt.hash('1234', 10);
+      const cashierPass = await bcrypt.hash('0000', 10);
+      
       await client.query(`
         INSERT INTO users (id, name, password, role) VALUES
-        ('admin', 'ผู้ดูแลระบบ', '1234', 'admin'),
-        ('cashier', 'แคชเชียร์', '0000', 'cashier')
+        ('admin', 'ผู้ดูแลระบบ', $1, 'admin'),
+        ('cashier', 'แคชเชียร์', $2, 'cashier')
         ON CONFLICT DO NOTHING;
-      `);
+      `, [adminPass, cashierPass]);
     }
 
     console.log("Database initialized successfully");
